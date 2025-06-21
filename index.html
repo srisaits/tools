@@ -288,6 +288,13 @@
             font-weight: 500;
         }
 
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
         /* Popular Tools */
         .popular-tools {
             padding: 60px 0;
@@ -564,8 +571,8 @@
             <p>Free online tools to convert, compress, edit and optimize your files. No installation required - works right in your browser!</p>
             
             <div class="search-bar">
-                <input type="text" placeholder="Search for tools...">
-                <button><i class="fas fa-search"></i> Search</button>
+                <input type="text" id="searchInput" placeholder="Search for tools...">
+                <button id="searchBtn"><i class="fas fa-search"></i> Search</button>
             </div>
         </div>
     </section>
@@ -579,17 +586,17 @@
             </div>
             
             <div class="category-tabs">
-                <button class="tab-btn active">All Tools</button>
-                <button class="tab-btn">Image Tools</button>
-                <button class="tab-btn">PDF Tools</button>
-                <button class="tab-btn">Converters</button>
-                <button class="tab-btn">Compressors</button>
-                <button class="tab-btn">Editors</button>
+                <button class="tab-btn active" data-category="all">All Tools</button>
+                <button class="tab-btn" data-category="image">Image Tools</button>
+                <button class="tab-btn" data-category="pdf">PDF Tools</button>
+                <button class="tab-btn" data-category="converter">Converters</button>
+                <button class="tab-btn" data-category="compressor">Compressors</button>
+                <button class="tab-btn" data-category="editor">Editors</button>
             </div>
             
-            <div class="tools-grid">
+            <div class="tools-grid" id="toolsGrid">
                 <!-- Tool Card 1 -->
-                <div class="tool-card">
+                <div class="tool-card" data-categories="image compressor" data-title="Image Compressor" data-description="Reduce image file size without losing quality. Supports JPG, PNG, and WebP formats.">
                     <div class="tool-card-img">
                         <i class="fas fa-file-image"></i>
                     </div>
@@ -604,7 +611,7 @@
                 </div>
                 
                 <!-- Tool Card 2 -->
-                <div class="tool-card">
+                <div class="tool-card" data-categories="pdf compressor" data-title="PDF Compressor" data-description="Make your PDF files smaller while preserving quality. Perfect for email attachments.">
                     <div class="tool-card-img">
                         <i class="fas fa-file-pdf"></i>
                     </div>
@@ -612,14 +619,14 @@
                         <h3>PDF Compressor</h3>
                         <p>Make your PDF files smaller while preserving quality. Perfect for email attachments.</p>
                         <div class="tool-card-footer">
-                            <a href="/tools/image-compress.html">Use Tool <i class="fas fa-arrow-right"></i></a>
+                            <a href="#">Use Tool <i class="fas fa-arrow-right"></i></a>
                             <span class="tool-badge">New</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Tool Card 3 -->
-                <div class="tool-card">
+                <div class="tool-card" data-categories="image converter" data-title="Image Converter" data-description="Convert between JPG, PNG, WebP, GIF and more. Batch conversion available.">
                     <div class="tool-card-img">
                         <i class="fas fa-exchange-alt"></i>
                     </div>
@@ -633,7 +640,7 @@
                 </div>
                 
                 <!-- Tool Card 4 -->
-                <div class="tool-card">
+                <div class="tool-card" data-categories="pdf converter" data-title="PDF to JPG" data-description="Convert PDF pages to high-quality JPG images. Extract all pages or just selected ones.">
                     <div class="tool-card-img">
                         <i class="fas fa-file-export"></i>
                     </div>
@@ -647,7 +654,7 @@
                 </div>
                 
                 <!-- Tool Card 5 -->
-                <div class="tool-card">
+                <div class="tool-card" data-categories="image editor" data-title="Image Cropper" data-description="Crop images to any size or aspect ratio. Perfect for social media profiles.">
                     <div class="tool-card-img">
                         <i class="fas fa-crop"></i>
                     </div>
@@ -661,7 +668,7 @@
                 </div>
                 
                 <!-- Tool Card 6 -->
-                <div class="tool-card">
+                <div class="tool-card" data-categories="pdf converter" data-title="PDF to Word" data-description="Convert PDF documents to editable Word files while preserving formatting.">
                     <div class="tool-card-img">
                         <i class="fas fa-file-word"></i>
                     </div>
@@ -685,9 +692,9 @@
                 <p>These are the tools our users love the most</p>
             </div>
             
-            <div class="tools-grid">
+            <div class="tools-grid" id="popularToolsGrid">
                 <!-- Popular Tool 1 -->
-                <div class="tool-card">
+                <div class="tool-card" data-categories="image compressor" data-title="Image Size Reducer" data-description="Quickly reduce image dimensions and file size for web use.">
                     <div class="tool-card-img" style="background: #ffecec; color: #ff6b6b;">
                         <i class="fas fa-compress-alt"></i>
                     </div>
@@ -702,7 +709,7 @@
                 </div>
                 
                 <!-- Popular Tool 2 -->
-                <div class="tool-card">
+                <div class="tool-card" data-categories="pdf editor" data-title="PDF Merger" data-description="Combine multiple PDF files into one document in seconds.">
                     <div class="tool-card-img" style="background: #e3f2fd; color: #1976d2;">
                         <i class="fas fa-file-alt"></i>
                     </div>
@@ -717,7 +724,7 @@
                 </div>
                 
                 <!-- Popular Tool 3 -->
-                <div class="tool-card">
+                <div class="tool-card" data-categories="pdf editor" data-title="PDF Password Protect" data-description="Add password protection to your PDF documents securely.">
                     <div class="tool-card-img" style="background: #fff8e1; color: #ffa000;">
                         <i class="fas fa-lock"></i>
                     </div>
@@ -873,16 +880,78 @@
                 : '<i class="fas fa-bars"></i>';
         });
         
-        // Category Tabs
+        // Search Functionality
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const toolsGrid = document.getElementById('toolsGrid');
+        const popularToolsGrid = document.getElementById('popularToolsGrid');
+        const toolCards = document.querySelectorAll('.tool-card');
         const tabBtns = document.querySelectorAll('.tab-btn');
         
+        // Function to filter tools based on search query
+        function filterTools() {
+            const searchQuery = searchInput.value.toLowerCase();
+            let hasResults = false;
+            
+            toolCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const categories = card.getAttribute('data-categories').toLowerCase();
+                
+                if (title.includes(searchQuery) || 
+                    description.includes(searchQuery) || 
+                    categories.includes(searchQuery)) {
+                    card.style.display = 'block';
+                    hasResults = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Show "no results" message if no matches found
+            const noResultsElement = document.querySelector('.no-results');
+            if (!hasResults) {
+                if (!noResultsElement) {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'no-results';
+                    noResults.innerHTML = '<p>No tools found matching your search criteria. Try different keywords.</p>';
+                    toolsGrid.appendChild(noResults);
+                }
+            } else if (noResultsElement) {
+                noResultsElement.remove();
+            }
+        }
+        
+        // Event listeners for search
+        searchBtn.addEventListener('click', filterTools);
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                filterTools();
+            }
+        });
+        
+        // Category filtering
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                // Update active tab
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 
-                // Here you would filter tools based on category
-                // This would require additional JavaScript functionality
+                const category = btn.getAttribute('data-category');
+                
+                // Filter tools based on category
+                toolCards.forEach(card => {
+                    const cardCategories = card.getAttribute('data-categories');
+                    
+                    if (category === 'all' || cardCategories.includes(category)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Clear search input when changing categories
+                searchInput.value = '';
             });
         });
         
