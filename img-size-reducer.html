@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Size Reducer Tool</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 3rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1.5rem;
+            position: relative;
+            background-color: white;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: #f0f7ff;
+        }
+        
+        .upload-area i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-area input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .slider-container {
+            margin-bottom: 1rem;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .slider {
+            flex: 1;
+        }
+        
+        .slider-value {
+            width: 50px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .preview-box {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1rem;
+            background-color: white;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 4px;
+            max-height: 300px;
+        }
+        
+        .file-info {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            margin: 1rem auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .preview-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <h1>Image Size Reducer</h1>
+    <p style="text-align: center;">Upload an image to compress and reduce its file size</p>
+    
+    <div class="upload-area" id="uploadArea">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p><strong>Click to upload an image</strong></p>
+        <p>or drag and drop your file here</p>
+        <p>Supports: JPG, PNG, GIF, WEBP (Max: 10MB)</p>
+        <input type="file" id="fileInput" accept="image/*">
+    </div>
+    
+    <div class="controls" id="controls" style="display: none;">
+        <div class="control-group">
+            <div class="slider-container">
+                <label for="qualitySlider">Quality: <span id="qualityValue">80</span>%</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="qualitySlider" min="10" max="100" value="80" class="slider">
+                    <span class="slider-value" id="qualityValueDisplay">80</span>
+                </div>
+            </div>
+            
+            <div class="slider-container">
+                <label for="widthSlider">Max Width: <span id="widthValue">1000</span>px</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="widthSlider" min="100" max="2000" value="1000" step="50" class="slider">
+                    <span class="slider-value" id="widthValueDisplay">1000</span>
+                </div>
+            </div>
+            
+            <div class="slider-container">
+                <label for="heightSlider">Max Height: <span id="heightValue">1000</span>px</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="heightSlider" min="100" max="2000" value="1000" step="50" class="slider">
+                    <span class="slider-value" id="heightValueDisplay">1000</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <div class="slider-container">
+                <label for="formatSelect">Output Format:</label>
+                <select id="formatSelect">
+                    <option value="original">Original Format</option>
+                    <option value="jpeg">JPEG</option>
+                    <option value="png">PNG</option>
+                    <option value="webp">WEBP</option>
+                </select>
+            </div>
+            
+            <div class="slider-container">
+                <label>
+                    <input type="checkbox" id="maintainAspect" checked>
+                    Maintain Aspect Ratio
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="spinner" id="spinner"></div>
+    
+    <div class="buttons" id="actionButtons" style="display: none;">
+        <button class="btn btn-primary" id="processBtn">Compress Image</button>
+        <button class="btn btn-primary" id="resetBtn">Reset</button>
+    </div>
+    
+    <div class="preview-container" id="previewContainer" style="display: none;">
+        <div class="preview-box">
+            <h3>Original Image</h3>
+            <img id="originalPreview" class="image-preview">
+            <div class="file-info" id="originalInfo"></div>
+        </div>
+        <div class="preview-box">
+            <h3>Compressed Image</h3>
+            <img id="compressedPreview" class="image-preview">
+            <div class="file-info" id="compressedInfo"></div>
+            <button class="btn btn-primary" id="downloadBtn" style="width: 100%; margin-top: 1rem;">Download</button>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            const controls = document.getElementById('controls');
+            const actionButtons = document.getElementById('actionButtons');
+            const previewContainer = document.getElementById('previewContainer');
+            const originalPreview = document.getElementById('originalPreview');
+            const compressedPreview = document.getElementById('compressedPreview');
+            const originalInfo = document.getElementById('originalInfo');
+            const compressedInfo = document.getElementById('compressedInfo');
+            const processBtn = document.getElementById('processBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const spinner = document.getElementById('spinner');
+            const toast = document.getElementById('toast');
+            
+            // Slider elements
+            const qualitySlider = document.getElementById('qualitySlider');
+            const widthSlider = document.getElementById('widthSlider');
+            const heightSlider = document.getElementById('heightSlider');
+            const qualityValue = document.getElementById('qualityValue');
+            const widthValue = document.getElementById('widthValue');
+            const heightValue = document.getElementById('heightValue');
+            const formatSelect = document.getElementById('formatSelect');
+            const maintainAspect = document.getElementById('maintainAspect');
+            
+            // Variables
+            let originalFile = null;
+            let compressedBlob = null;
+            
+            // Event listeners for sliders
+            qualitySlider.addEventListener('input', function() {
+                qualityValue.textContent = this.value;
+            });
+            
+            widthSlider.addEventListener('input', function() {
+                widthValue.textContent = this.value;
+                if (maintainAspect.checked && originalFile) {
+                    updateHeightBasedOnAspectRatio();
+                }
+            });
+            
+            heightSlider.addEventListener('input', function() {
+                heightValue.textContent = this.value;
+                if (maintainAspect.checked && originalFile) {
+                    updateWidthBasedOnAspectRatio();
+                }
+            });
+            
+            maintainAspect.addEventListener('change', function() {
+                if (this.checked && originalFile) {
+                    updateHeightBasedOnAspectRatio();
+                }
+            });
+            
+            // File input handling
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Drag and drop handling
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--primary-color)';
+                this.style.backgroundColor = '#f0f7ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ccc';
+                this.style.backgroundColor = '';
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ccc';
+                this.style.backgroundColor = '';
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect({ target: fileInput });
+                }
+            });
+            
+            // Process button
+            processBtn.addEventListener('click', processImage);
+            
+            // Reset button
+            resetBtn.addEventListener('click', resetTool);
+            
+            // Download button
+            downloadBtn.addEventListener('click', downloadImage);
+            
+            // Handle file selection
+            function handleFileSelect(event) {
+                const file = event.target.files[0];
+                
+                if (!file) return;
+                
+                // Check if file is an image
+                if (!file.type.match('image.*')) {
+                    showToast('Please select an image file', 'error');
+                    return;
+                }
+                
+                // Check file size (limit to 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast('File is too large (max 10MB)', 'error');
+                    return;
+                }
+                
+                originalFile = file;
+                
+                // Display original image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    originalPreview.src = e.target.result;
+                    
+                    // Set initial dimensions based on original image
+                    const img = new Image();
+                    img.onload = function() {
+                        // Set slider max values based on original dimensions
+                        widthSlider.max = Math.max(img.width, 2000);
+                        heightSlider.max = Math.max(img.height, 2000);
+                        
+                        // Set initial values to original dimensions (capped at 2000px)
+                        const initialWidth = Math.min(img.width, 2000);
+                        const initialHeight = Math.min(img.height, 2000);
+                        
+                        widthSlider.value = initialWidth;
+                        heightSlider.value = initialHeight;
+                        widthValue.textContent = initialWidth;
+                        heightValue.textContent = initialHeight;
+                        
+                        // Show file info
+                        originalInfo.innerHTML = `
+                            <p><strong>Name:</strong> ${file.name}</p>
+                            <p><strong>Type:</strong> ${file.type}</p>
+                            <p><strong>Size:</strong> ${formatFileSize(file.size)}</p>
+                            <p><strong>Dimensions:</strong> ${img.width} × ${img.height} px</p>
+                        `;
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                // Show controls and action buttons
+                controls.style.display = 'flex';
+                actionButtons.style.display = 'flex';
+                previewContainer.style.display = 'flex';
+            }
+            
+            // Process image
+            function processImage() {
+                if (!originalFile) return;
+                
+                spinner.style.display = 'block';
+                processBtn.disabled = true;
+                
+                setTimeout(() => {
+                    const img = new Image();
+                    img.onload = function() {
+                        // Create canvas with target dimensions
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Calculate new dimensions
+                        let newWidth = parseInt(widthSlider.value);
+                        let newHeight = parseInt(heightSlider.value);
+                        
+                        const aspectRatio = img.width / img.height;
+                        
+                        if (maintainAspect.checked) {
+                            if (newWidth / newHeight > aspectRatio) {
+                                newWidth = Math.round(newHeight * aspectRatio);
+                            } else {
+                                newHeight = Math.round(newWidth / aspectRatio);
+                            }
+                        }
+                        
+                        canvas.width = newWidth;
+                        canvas.height = newHeight;
+                        
+                        // Draw image on canvas
+                        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                        
+                        // Get output format
+                        let outputFormat = 'image/jpeg';
+                        let fileExtension = 'jpg';
+                        
+                        switch (formatSelect.value) {
+                            case 'png':
+                                outputFormat = 'image/png';
+                                fileExtension = 'png';
+                                break;
+                            case 'webp':
+                                outputFormat = 'image/webp';
+                                fileExtension = 'webp';
+                                break;
+                            case 'original':
+                                if (originalFile.type === 'image/png') {
+                                    outputFormat = 'image/png';
+                                    fileExtension = 'png';
+                                } else if (originalFile.type === 'image/webp') {
+                                    outputFormat = 'image/webp';
+                                    fileExtension = 'webp';
+                                }
+                                break;
+                        }
+                        
+                        // Quality setting
+                        let quality = parseFloat(qualitySlider.value) / 100;
+                        
+                        // Convert canvas to blob
+                        canvas.toBlob(function(blob) {
+                            if (!blob) {
+                                showToast('Error compressing image', 'error');
+                                spinner.style.display = 'none';
+                                processBtn.disabled = false;
+                                return;
+                            }
+                            
+                            compressedBlob = blob;
+                            
+                            // Display compressed image
+                            compressedPreview.src = URL.createObjectURL(blob);
+                            
+                            // Show compressed file info
+                            compressedInfo.innerHTML = `
+                                <p><strong>Format:</strong> ${outputFormat.replace('image/', '')}</p>
+                                <p><strong>Size:</strong> ${formatFileSize(blob.size)}</p>
+                                <p><strong>Reduction:</strong> ${calculateReduction(originalFile.size, blob.size)}%</p>
+                                <p><strong>Dimensions:</strong> ${newWidth} × ${newHeight} px</p>
+                            `;
+                            
+                            spinner.style.display = 'none';
+                            processBtn.disabled = false;
+                            showToast('Image compressed successfully!');
+                        }, outputFormat, quality);
+                    };
+                    
+                    img.onerror = function() {
+                        showToast('Error loading image', 'error');
+                        spinner.style.display = 'none';
+                        processBtn.disabled = false;
+                    };
+                    
+                    img.src = URL.createObjectURL(originalFile);
+                }, 100);
+            }
+            
+            // Reset tool
+            function resetTool() {
+                fileInput.value = '';
+                originalFile = null;
+                compressedBlob = null;
+                
+                // Reset UI
+                controls.style.display = 'none';
+                actionButtons.style.display = 'none';
+                previewContainer.style.display = 'none';
+                spinner.style.display = 'none';
+                
+                // Reset sliders
+                qualitySlider.value = 80;
+                qualityValue.textContent = '80';
+                
+                widthSlider.value = 1000;
+                widthValue.textContent = '1000';
+                
+                heightSlider.value = 1000;
+                heightValue.textContent = '1000';
+                
+                formatSelect.value = 'original';
+                maintainAspect.checked = true;
+                
+                // Clear previews
+                originalPreview.src = '';
+                compressedPreview.src = '';
+                originalInfo.innerHTML = '';
+                compressedInfo.innerHTML = '';
+            }
+            
+            // Download compressed image
+            function downloadImage() {
+                if (!compressedBlob) return;
+                
+                const a = document.createElement('a');
+                const url = URL.createObjectURL(compressedBlob);
+                
+                let filename = originalFile.name.split('.')[0];
+                let extension = formatSelect.value === 'original' 
+                    ? originalFile.name.split('.').pop() 
+                    : formatSelect.value;
+                
+                a.href = url;
+                a.download = `${filename}_compressed.${extension}`;
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+            }
+            
+            // Helper functions
+            function updateHeightBasedOnAspectRatio() {
+                const img = new Image();
+                img.onload = function() {
+                    const aspectRatio = img.width / img.height;
+                    const newHeight = Math.round(widthSlider.value / aspectRatio);
+                    heightSlider.value = newHeight;
+                    heightValue.textContent = newHeight;
+                };
+                img.onerror = function() {
+                    showToast('Error calculating dimensions', 'error');
+                };
+                img.src = URL.createObjectURL(originalFile);
+            }
+            
+            function updateWidthBasedOnAspectRatio() {
+                const img = new Image();
+                img.onload = function() {
+                    const aspectRatio = img.width / img.height;
+                    const newWidth = Math.round(heightSlider.value * aspectRatio);
+                    widthSlider.value = newWidth;
+                    widthValue.textContent = newWidth;
+                };
+                img.onerror = function() {
+                    showToast('Error calculating dimensions', 'error');
+                };
+                img.src = URL.createObjectURL(originalFile);
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            function calculateReduction(originalSize, compressedSize) {
+                return ((originalSize - compressedSize) / originalSize * 100).toFixed(2);
+            }
+            
+            function showToast(message, type = 'success') {
+                toast.textContent = message;
+                toast.className = 'toast';
+                toast.style.backgroundColor = type === 'error' ? '#dc3545' : '#28a745';
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
