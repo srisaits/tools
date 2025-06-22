@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Cropper Tool | Resize & Crop Photos for Social Media</title>
+    <meta name="description" content="Free online tool to crop and resize images to perfect dimensions for social media profiles. Supports custom sizes and preset aspect ratios for all platforms.">
+    <meta name="keywords" content="image cropper, photo crop tool, social media image resizer, profile picture cropper, image editor">
+    
+    <!-- Schema.org markup for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Image Cropper Tool",
+      "url": "https://example.com/image-cropper",
+      "description": "Free online tool to crop and resize images to perfect dimensions for social media profiles.",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://example.com/image-cropper">
+    <meta property="og:title" content="Image Cropper Tool | Resize & Crop Photos for Social Media">
+    <meta property="og:description" content="Free online tool to crop and resize images to perfect dimensions for social media profiles.">
+    <meta property="og:image" content="https://example.com/images/cropper-preview.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://example.com/image-cropper">
+    <meta property="twitter:title" content="Image Cropper Tool | Resize & Crop Photos for Social Media">
+    <meta property="twitter:description" content="Free online tool to crop and resize images to perfect dimensions for social media profiles.">
+    <meta property="twitter:image" content="https://example.com/images/cropper-preview.jpg">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* Ad Space - Leaderboard */
+        .ad-leaderboard {
+            background-color: #f1f3f5;
+            padding: 15px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: var(--border-radius);
+        }
+
+        .ad-leaderboard .ad-placeholder {
+            background-color: #e9ecef;
+            color: #6c757d;
+            padding: 20px;
+            margin: 0 auto;
+            max-width: 728px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            border-radius: var(--border-radius);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr 300px;
+            }
+        }
+
+        /* Tool Card */
+        .tool-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tool-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #ced4da;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 107, 255, 0.05);
+        }
+
+        .upload-area.active {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 107, 255, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Preview Container */
+        .preview-container {
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        #image-preview {
+            max-width: 100%;
+            max-height: 500px;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .control-group {
+            margin-bottom: 1rem;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #3a56d4;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        /* Aspect Ratio Presets */
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem 1rem;
+            background-color: #e9ecef;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .preset-btn:hover {
+            background-color: #dee2e6;
+        }
+
+        .preset-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Social Media Presets */
+        .social-presets {
+            margin-top: 1.5rem;
+        }
+
+        .social-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .social-btn {
+            padding: 0.5rem 1rem;
+            background-color: #e9ecef;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .social-btn:hover {
+            background-color: #dee2e6;
+        }
+
+        .social-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: none;
+        }
+
+        @media (min-width: 992px) {
+            .sidebar {
+                display: block;
+            }
+        }
+
+        /* Ad Space - Rectangle */
+        .ad-rectangle {
+            background-color: #f1f3f5;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-radius: var(--border-radius);
+        }
+
+        .ad-rectangle .ad-placeholder {
+            background-color: #e9ecef;
+            color: #6c757d;
+            padding: 15px;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            border-radius: var(--border-radius);
+        }
+
+        /* History Section */
+        .history-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .history-item {
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .history-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: #adb5bd;
+        }
+
+        .footer-ad {
+            background-color: #f1f3f5;
+            padding: 15px;
+            text-align: center;
+            margin-top: 2rem;
+            border-radius: var(--border-radius);
+        }
+
+        .footer-ad .ad-placeholder {
+            background-color: #e9ecef;
+            color: #6c757d;
+            padding: 15px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            border-radius: var(--border-radius);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Dark Mode */
+        .dark-mode {
+            background-color: #212529;
+            color: #f8f9fa;
+        }
+
+        .dark-mode .tool-card,
+        .dark-mode .history-section {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+
+        .dark-mode .upload-area {
+            border-color: #495057;
+            background-color: #343a40;
+        }
+
+        .dark-mode .preset-btn,
+        .dark-mode .social-btn {
+            background-color: #495057;
+            color: #f8f9fa;
+        }
+
+        .dark-mode .preset-btn:hover,
+        .dark-mode .social-btn:hover {
+            background-color: #5c636a;
+        }
+
+        /* Loading Indicator */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1000;
+        }
+
+        .dark-mode .loading {
+            background-color: rgba(52, 58, 64, 0.9);
+            color: white;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .history-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility */
+        [role="button"],
+        button,
+        input,
+        select {
+            &:focus {
+                outline: 3px solid var(--primary-color);
+                outline-offset: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">ImageCropper</a>
+            <div>
+                <button id="dark-mode-toggle" class="btn btn-secondary">Dark Mode</button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Ad Leaderboard -->
+    <div class="container">
+        <div class="ad-leaderboard">
+            <div class="ad-placeholder">
+                Advertisement (728x90 Leaderboard)
+            </div>
+        </div>
+    </div>
+    
+    <main class="container">
+        <div class="main-content">
+            <div class="tool-card">
+                <h2>Image Cropper Tool</h2>
+                
+                <div class="upload-area" id="upload-area" tabindex="0" role="button" aria-label="Drag and drop image here or click to select file">
+                    <div class="upload-icon">📁</div>
+                    <p class="upload-text">Drag & drop your image here or click to browse</p>
+                    <p class="file-types">Supports: JPG, PNG, WEBP (Max 10MB)</p>
+                    <button class="btn" id="select-image-btn">Select Image</button>
+                    <input type="file" id="file-input" class="file-input" accept="image/*">
+                </div>
+                
+                <div class="preview-container" id="preview-container">
+                    <div id="image-container" style="max-width: 100%;">
+                        <img id="image-preview" src="" alt="Image preview">
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="width-input">Width (px):</label>
+                        <input type="number" id="width-input" min="1" value="500">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="height-input">Height (px):</label>
+                        <input type="number" id="height-input" min="1" value="500">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="aspect-ratio">Aspect Ratio:</label>
+                        <select id="aspect-ratio">
+                            <option value="free">Free</option>
+                            <option value="1:1">1:1 (Square)</option>
+                            <option value="16:9">16:9 (Widescreen)</option>
+                            <option value="9:16">9:16 (Portrait)</option>
+                            <option value="4:5">4:5 (Instagram Post)</option>
+                            <option value="1.91:1">1.91:1 (Facebook Link)</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group" id="custom-ratio-group" style="display: none;">
+                        <label for="custom-ratio">Custom Ratio (e.g. 3:2):</label>
+                        <input type="text" id="custom-ratio" placeholder="width:height">
+                    </div>
+                </div>
+                
+                <div class="preset-buttons">
+                    <button class="preset-btn" data-ratio="1:1">1:1</button>
+                    <button class="preset-btn" data-ratio="4:3">4:3</button>
+                    <button class="preset-btn" data-ratio="16:9">16:9</button>
+                    <button class="preset-btn" data-ratio="9:16">9:16</button>
+                    <button class="preset-btn" data-ratio="3:2">3:2</button>
+                    <button class="preset-btn" data-ratio="2:3">2:3</button>
+                </div>
+                
+                <div class="social-presets">
+                    <h3>Social Media Presets:</h3>
+                    <div class="social-buttons">
+                        <button class="social-btn" data-width="1080" data-height="1080">
+                            <span>Instagram Post</span>
+                        </button>
+                        <button class="social-btn" data-width="1080" data-height="1350">
+                            <span>Instagram Story</span>
+                        </button>
+                        <button class="social-btn" data-width="1200" data-height="630">
+                            <span>Facebook Post</span>
+                        </button>
+                        <button class="social-btn" data-width="820" data-height="312">
+                            <span>Facebook Cover</span>
+                        </button>
+                        <button class="social-btn" data-width="1500" data-height="500">
+                            <span>Twitter Header</span>
+                        </button>
+                        <button class="social-btn" data-width="1200" data-height="1200">
+                            <span>Pinterest Pin</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="actions-panel" style="margin-top: 1.5rem;">
+                    <button id="rotate-left-btn" class="btn btn-secondary">↺ Rotate Left</button>
+                    <button id="rotate-right-btn" class="btn btn-secondary">↻ Rotate Right</button>
+                    <button id="flip-horizontal-btn" class="btn btn-secondary">⇄ Flip Horizontal</button>
+                    <button id="flip-vertical-btn" class="btn btn-secondary">⇅ Flip Vertical</button>
+                </div>
+                
+                <div class="actions-panel" style="margin-top: 1.5rem;">
+                    <button id="download-jpg" class="btn btn-success">Download JPG</button>
+                    <button id="download-png" class="btn btn-success">Download PNG</button>
+                    <button id="download-webp" class="btn btn-success">Download WEBP</button>
+                    <button id="download-all" class="btn" style="display: none;">Download All as ZIP</button>
+                </div>
+                
+                <div class="loading" id="loading-indicator">
+                    <div class="loading-spinner" aria-hidden="true"></div>
+                    <p>Processing Image...</p>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <!-- Ad Rectangle -->
+                <div class="ad-rectangle">
+                    <div class="ad-placeholder">
+                        Advertisement (300x250 Rectangle)
+                    </div>
+                </div>
+                
+                <!-- History Section -->
+                <div class="history-section">
+                    <h3>Recent Crops</h3>
+                    <div class="history-list" id="history-list">
+                        <!-- History items will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-ad">
+                <div class="ad-placeholder">
+                    Advertisement (728x90 Footer)
+                </div>
+            </div>
+            
+            <div class="footer-content">
+                <div>
+                    <h3>ImageCropper</h3>
+                    <p>Free online tool to crop and resize images for social media and other platforms.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <a href="#">Home</a>
+                    <a href="#">About</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <a href="#">Social Media Image Sizes</a>
+                    <a href="#">Image Optimization Guide</a>
+                    <a href="#">FAQ</a>
+                    <a href="#">Contact Us</a>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                © <span id="current-year"></span> ImageCropper. All rights reserved.
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Include Cropper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <!-- Include JSZip for ZIP downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const uploadArea = document.getElementById('upload-area');
+            const selectImageBtn = document.getElementById('select-image-btn');
+            const fileInput = document.getElementById('file-input');
+            const previewContainer = document.getElementById('preview-container');
+            const imagePreview = document.getElementById('image-preview');
+            const widthInput = document.getElementById('width-input');
+            const heightInput = document.getElementById('height-input');
+            const aspectRatioSelect = document.getElementById('aspect-ratio');
+            const customRatioGroup = document.getElementById('custom-ratio-group');
+            const customRatioInput = document.getElementById('custom-ratio');
+            const rotateLeftBtn = document.getElementById('rotate-left-btn');
+            const rotateRightBtn = document.getElementById('rotate-right-btn');
+            const flipHorizontalBtn = document.getElementById('flip-horizontal-btn');
+            const flipVerticalBtn = document.getElementById('flip-vertical-btn');
+            const downloadJpgBtn = document.getElementById('download-jpg');
+            const downloadPngBtn = document.getElementById('download-png');
+            const downloadWebpBtn = document.getElementById('download-webp');
+            const downloadAllBtn = document.getElementById('download-all');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const historyList = document.getElementById('history-list');
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            
+            // Application state
+            let cropper;
+            let currentImage = null;
+            let convertedImages = [];
+            
+            // Initialize
+            initEventListeners();
+            setCurrentYear();
+            loadHistory();
+            
+            function initEventListeners() {
+                // Upload area interactions
+                uploadArea.addEventListener('click', handleUploadAreaClick);
+                uploadArea.addEventListener('dragover', handleDragOver);
+                uploadArea.addEventListener('dragleave', handleDragLeave);
+                uploadArea.addEventListener('drop', handleDrop);
+                
+                // Select image button
+                selectImageBtn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent triggering upload area click
+                    fileInput.click();
+                });
+                
+                // File input change
+                fileInput.addEventListener('change', handleFileSelect);
+                
+                // Dimension inputs
+                widthInput.addEventListener('change', updateCropper);
+                heightInput.addEventListener('change', updateCropper);
+                
+                // Aspect ratio controls
+                aspectRatioSelect.addEventListener('change', handleAspectRatioChange);
+                customRatioInput.addEventListener('change', handleCustomRatio);
+                
+                // Preset buttons
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const ratio = this.getAttribute('data-ratio');
+                        setAspectRatio(ratio);
+                    });
+                });
+                
+                // Social media buttons
+                document.querySelectorAll('.social-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const width = this.getAttribute('data-width');
+                        const height = this.getAttribute('data-height');
+                        widthInput.value = width;
+                        heightInput.value = height;
+                        updateCropper();
+                    });
+                });
+                
+                // Rotation/flip buttons
+                rotateLeftBtn.addEventListener('click', rotateLeft);
+                rotateRightBtn.addEventListener('click', rotateRight);
+                flipHorizontalBtn.addEventListener('click', flipHorizontal);
+                flipVerticalBtn.addEventListener('click', flipVertical);
+                
+                // Download buttons
+                downloadJpgBtn.addEventListener('click', () => downloadImage('jpg'));
+                downloadPngBtn.addEventListener('click', () => downloadImage('png'));
+                downloadWebpBtn.addEventListener('click', () => downloadImage('webp'));
+                downloadAllBtn.addEventListener('click', downloadAllAsZip);
+                
+                // Dark mode toggle
+                darkModeToggle.addEventListener('click', toggleDarkMode);
+            }
+            
+            function handleUploadAreaClick() {
+                fileInput.click();
+            }
+            
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadArea.classList.add('active');
+            }
+            
+            function handleDragLeave(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadArea.classList.remove('active');
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadArea.classList.remove('active');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFiles(files);
+                }
+            }
+            
+            function handleFileSelect(e) {
+                const files = e.target.files;
+                if (files && files.length > 0) {
+                    handleFiles(files);
+                }
+            }
+            
+            function handleFiles(files) {
+                const file = files[0];
+                
+                // Check file type
+                if (!file.type.match('image.*')) {
+                    alert('Please select an image file (JPG, PNG, WEBP)');
+                    return;
+                }
+                
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File size exceeds 10MB limit');
+                    return;
+                }
+                
+                showLoadingIndicator();
+                
+                // Read the file
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    
+                    // Initialize cropper after image loads
+                    imagePreview.onload = function() {
+                        initCropper();
+                        currentImage = file;
+                        previewContainer.style.display = 'block';
+                        hideLoadingIndicator();
+                    };
+                    
+                    // Handle image load error
+                    imagePreview.onerror = function() {
+                        hideLoadingIndicator();
+                        alert('Error loading the image. Please try another file.');
+                    };
+                };
+                reader.onerror = function() {
+                    hideLoadingIndicator();
+                    alert('Error reading the image file. Please try again.');
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            function initCropper() {
+                if (cropper) {
+                    cropper.destroy();
+                }
+                
+                cropper = new Cropper(imagePreview, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    responsive: true,
+                    restore: false,
+                    checkCrossOrigin: false,
+                    guides: true,
+                    center: true,
+                    highlight: true,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                    ready: function() {
+                        // Set initial dimensions
+                        const cropBoxData = this.cropper.getCropBoxData();
+                        widthInput.value = Math.round(cropBoxData.width);
+                        heightInput.value = Math.round(cropBoxData.height);
+                    },
+                    crop: function(event) {
+                        // Update dimension inputs when crop box changes
+                        widthInput.value = Math.round(event.detail.width);
+                        heightInput.value = Math.round(event.detail.height);
+                    }
+                });
+            }
+            
+            function updateCropper() {
+                if (!cropper) return;
+                
+                const width = parseInt(widthInput.value);
+                const height = parseInt(heightInput.value);
+                
+                if (isNaN(width) || isNaN(height)) return;
+                
+                // Get current crop box data
+                const cropBoxData = cropper.getCropBoxData();
+                
+                // Update crop box dimensions
+                cropper.setCropBoxData({
+                    left: cropBoxData.left,
+                    top: cropBoxData.top,
+                    width: width,
+                    height: height
+                });
+            }
+            
+            function handleAspectRatioChange() {
+                const ratio = aspectRatioSelect.value;
+                
+                if (ratio === 'custom') {
+                    customRatioGroup.style.display = 'block';
+                    return;
+                } else {
+                    customRatioGroup.style.display = 'none';
+                }
+                
+                if (ratio === 'free') {
+                    cropper.setAspectRatio(NaN);
+                    return;
+                }
+                
+                setAspectRatio(ratio);
+            }
+            
+            function setAspectRatio(ratio) {
+                const [width, height] = ratio.split(':').map(Number);
+                const aspectRatio = width / height;
+                
+                // Update aspect ratio in cropper
+                cropper.setAspectRatio(aspectRatio);
+                
+                // Update dimension inputs while maintaining aspect ratio
+                const currentWidth = parseInt(widthInput.value);
+                const newHeight = Math.round(currentWidth / aspectRatio);
+                heightInput.value = newHeight;
+                
+                // Update cropper
+                updateCropper();
+            }
+            
+            function handleCustomRatio() {
+                const ratio = customRatioInput.value.trim();
+                
+                if (!ratio.match(/^\d+:\d+$/)) {
+                    alert('Please enter ratio in format "width:height" (e.g. 3:2)');
+                    return;
+                }
+                
+                setAspectRatio(ratio);
+            }
+            
+            function rotateLeft() {
+                if (cropper) {
+                    cropper.rotate(-90);
+                }
+            }
+            
+            function rotateRight() {
+                if (cropper) {
+                    cropper.rotate(90);
+                }
+            }
+            
+            function flipHorizontal() {
+                if (cropper) {
+                    const scaleX = cropper.getData().scaleX || 1;
+                    cropper.scaleX(-scaleX);
+                }
+            }
+            
+            function flipVertical() {
+                if (cropper) {
+                    const scaleY = cropper.getData().scaleY || 1;
+                    cropper.scaleY(-scaleY);
+                }
+            }
+            
+            function showLoadingIndicator() {
+                loadingIndicator.style.display = 'block';
+                // Disable all buttons while loading
+                document.querySelectorAll('button').forEach(btn => {
+                    btn.disabled = true;
+                });
+            }
+            
+            function hideLoadingIndicator() {
+                loadingIndicator.style.display = 'none';
+                // Re-enable all buttons
+                document.querySelectorAll('button').forEach(btn => {
+                    btn.disabled = false;
+                });
+            }
+            
+            function downloadImage(format) {
+                if (!cropper) {
+                    alert('Please upload an image first');
+                    return;
+                }
+                
+                showLoadingIndicator();
+                
+                try {
+                    // Get cropped canvas
+                    const canvas = cropper.getCroppedCanvas({
+                        width: parseInt(widthInput.value),
+                        height: parseInt(heightInput.value),
+                        minWidth: 1,
+                        minHeight: 1,
+                        maxWidth: 4096,
+                        maxHeight: 4096,
+                        fillColor: '#fff',
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high'
+                    });
+                    
+                    if (!canvas) {
+                        throw new Error('Failed to create cropped canvas');
+                    }
+                    
+                    // Convert to blob
+                    canvas.toBlob((blob) => {
+                        if (!blob) {
+                            throw new Error('Failed to create image blob');
+                        }
+                        
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `cropped-image.${format}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        
+                        // Clean up
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                        }, 100);
+                        
+                        // Save to history
+                        saveToHistory(url, format);
+                        
+                        // Store for ZIP download
+                        convertedImages.push({
+                            url: url,
+                            format: format,
+                            filename: `cropped-image.${format}`
+                        });
+                        
+                        // Show download all button if multiple formats available
+                        if (convertedImages.length > 1) {
+                            downloadAllBtn.style.display = 'inline-block';
+                        }
+                        
+                        hideLoadingIndicator();
+                    }, `image/${format}`, 0.9);
+                } catch (error) {
+                    console.error('Error processing image:', error);
+                    alert('Error processing image. Please try again.');
+                    hideLoadingIndicator();
+                }
+            }
+            
+            async function downloadAllAsZip() {
+                if (convertedImages.length === 0) {
+                    alert('No images to download. Please convert some images first.');
+                    return;
+                }
+                
+                showLoadingIndicator();
+                
+                try {
+                    const zip = new JSZip();
+                    const folder = zip.folder("cropped-images");
+                    
+                    // Add each image to the ZIP
+                    for (const image of convertedImages) {
+                        const response = await fetch(image.url);
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch image: ${image.url}`);
+                        }
+                        const blob = await response.blob();
+                        folder.file(image.filename, blob);
+                    }
+                    
+                    // Generate ZIP file
+                    const content = await zip.generateAsync({ type: 'blob' });
+                    const zipUrl = URL.createObjectURL(content);
+                    
+                    // Create download link
+                    const link = document.createElement('a');
+                    link.href = zipUrl;
+                    link.download = 'cropped-images.zip';
+                    document.body.appendChild(link);
+                    link.click();
+                    
+                    // Clean up
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(zipUrl);
+                    }, 100);
+                } catch (error) {
+                    console.error('Error creating ZIP file:', error);
+                    alert('Error creating ZIP file. Please try again.');
+                } finally {
+                    hideLoadingIndicator();
+                }
+            }
+            
+            function saveToHistory(imageUrl, format) {
+                // Get current history from localStorage
+                let history = JSON.parse(localStorage.getItem('cropHistory') || '[]');
+                
+                // Add new item
+                history.unshift({
+                    url: imageUrl,
+                    format: format,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Keep only the last 6 items
+                if (history.length > 6) {
+                    history = history.slice(0, 6);
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('cropHistory', JSON.stringify(history));
+                
+                // Update the UI
+                loadHistory();
+            }
+            
+            function loadHistory() {
+                // Clear current history display
+                historyList.innerHTML = '';
+                
+                // Get history from localStorage
+                const history = JSON.parse(localStorage.getItem('cropHistory') || '[]');
+                
+                if (history.length === 0) {
+                    historyList.innerHTML = '<p>No recent crops yet</p>';
+                    return;
+                }
+                
+                // Add each item to the history list
+                history.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `
+                        <img src="${item.url}" alt="Recently cropped ${item.format} image">
+                    `;
+                    historyItem.addEventListener('click', () => {
+                        // Create a temporary link to download the image
+                        const link = document.createElement('a');
+                        link.href = item.url;
+                        link.download = `cropped-image-${new Date(item.timestamp).getTime()}.${item.format}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    });
+                    historyList.appendChild(historyItem);
+                });
+            }
+            
+            function toggleDarkMode() {
+                document.body.classList.toggle('dark-mode');
+                
+                // Save preference to localStorage
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                localStorage.setItem('darkMode', isDarkMode);
+                
+                // Update button text
+                darkModeToggle.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+            }
+            
+            function setCurrentYear() {
+                document.getElementById('current-year').textContent = new Date().getFullYear();
+            }
+            
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.textContent = 'Light Mode';
+            }
+        });
+    </script>
+</body>
+</html>
