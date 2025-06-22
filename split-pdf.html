@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free online tool to split PDF files into individual pages. Extract single pages or save each page as a separate PDF file instantly.">
+  <meta name="keywords" content="split PDF, extract PDF pages, PDF separator, PDF tools, online PDF editor">
+  <meta name="author" content="PDF Tools Online">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Free PDF Splitter Tool - Extract Pages Online">
+  <meta property="og:description" content="Split your PDF documents into individual pages with our free online tool. No registration required.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yourwebsite.com/split-pdf">
+  <link rel="canonical" href="https://yourwebsite.com/split-pdf">
+  <title>Split PDF Tool | Extract Pages to Separate Files Online</title>
+  <style>
+    :root {
+      --primary-color: #4a6bdf;
+      --secondary-color: #3a56b2;
+      --accent-color: #ff6b6b;
+      --light-gray: #f5f7fa;
+      --medium-gray: #e1e5ee;
+      --dark-gray: #6b7280;
+      --text-color: #2d3748;
+      --error-color: #e53e3e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--light-gray);
+      padding: 0;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px 0;
+      margin-bottom: 30px;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+    }
+
+    .tagline {
+      color: var(--dark-gray);
+      font-size: 1rem;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    @media (min-width: 992px) {
+      .main-content {
+        grid-template-columns: 1fr 300px;
+      }
+    }
+
+    .tool-container {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .ad-container {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .ad-placeholder {
+      background: var(--light-gray);
+      border: 1px dashed var(--medium-gray);
+      padding: 30px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--medium-gray);
+      border-radius: 8px;
+      padding: 40px 20px;
+      text-align: center;
+      margin-bottom: 25px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary-color);
+      background-color: rgba(74, 107, 223, 0.05);
+    }
+
+    .upload-area.highlight {
+      border-color: var(--primary-color);
+      background-color: rgba(74, 107, 223, 0.1);
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      background-color: var(--medium-gray);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .btn-outline:hover {
+      background-color: rgba(74, 107, 223, 0.1);
+    }
+
+    .btn-danger {
+      background-color: var(--accent-color);
+    }
+
+    .btn-danger:hover {
+      background-color: #e05555;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: var(--light-gray);
+      border-radius: 8px;
+    }
+
+    .file-icon {
+      font-size: 24px;
+      color: var(--primary-color);
+    }
+
+    .file-details {
+      flex-grow: 1;
+    }
+
+    .file-name {
+      font-weight: 500;
+      margin-bottom: 5px;
+      word-break: break-all;
+    }
+
+    .file-size {
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+    }
+
+    .preview-container {
+      margin-top: 30px;
+      display: none;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .page-thumbnails {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    @media (max-width: 768px) {
+      .page-thumbnails {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+    }
+
+    .page-thumbnail {
+      border: 1px solid var(--medium-gray);
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      aspect-ratio: 1 / 1.414; /* Standard paper ratio */
+    }
+
+    .page-thumbnail:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-thumbnail.selected {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px var(--primary-color);
+    }
+
+    .page-number {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .error-message {
+      color: var(--error-color);
+      background-color: rgba(229, 62, 62, 0.1);
+      padding: 15px;
+      border-radius: 6px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--primary-color);
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      margin-top: 50px;
+      background-color: white;
+      border-top: 1px solid var(--medium-gray);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .feature-card h3 {
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+      }
+
+      .tool-container {
+        padding: 20px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div>
+          <h1>PDF Splitter Tool</h1>
+          <p class="tagline">Split PDF files into individual pages online - Free and easy to use</p>
+        </div>
+        <div class="ad-placeholder" style="max-width: 300px;">
+          <!-- Top Header Ad -->
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID"
+               crossorigin="anonymous"></script>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+               data-ad-slot="YOUR_HEADER_AD_SLOT"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+               (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="main-content">
+      <div class="tool-container">
+        <h2>Split Your PDF File</h2>
+        <p>Upload a PDF file to extract pages as individual PDFs</p>
+
+        <div id="uploadArea" class="upload-area">
+          <div class="upload-icon">📄</div>
+          <h3>Drag & Drop your PDF here</h3>
+          <p>or click to browse files</p>
+          <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+          <button class="btn btn-outline" style="margin-top: 15px;">
+            <span>Select PDF File</span>
+          </button>
+        </div>
+
+        <div id="fileInfo" class="file-info" style="display: none;">
+          <div class="file-icon">📄</div>
+          <div class="file-details">
+            <div class="file-name" id="fileName">example.pdf</div>
+            <div class="file-size" id="fileSize">2.4 MB</div>
+          </div>
+          <button id="removeFile" class="btn btn-danger">Remove</button>
+        </div>
+
+        <div id="errorDisplay" class="error-message"></div>
+
+        <div id="loading" class="loading">
+          <div class="spinner"></div>
+          <p>Processing your PDF file...</p>
+        </div>
+
+        <div id="previewContainer" class="preview-container">
+          <div class="preview-header">
+            <h3>Select Pages to Extract</h3>
+            <div>
+              <button id="selectAll" class="btn btn-outline">Select All</button>
+              <button id="deselectAll" class="btn btn-outline">Deselect All</button>
+            </div>
+          </div>
+
+          <div id="pageThumbnails" class="page-thumbnails">
+            <!-- Page thumbnails will be inserted here by JavaScript -->
+          </div>
+
+          <div class="action-buttons">
+            <button id="splitAll" class="btn">
+              <span>Split All Pages</span>
+            </button>
+            <button id="splitSelected" class="btn btn-outline">
+              <span>Download Selected</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ad-container">
+        <div class="ad-placeholder">
+          <!-- Sidebar Ad 1 -->
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID"
+               crossorigin="anonymous"></script>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+               data-ad-slot="YOUR_SIDEBAR_AD_SLOT_1"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+               (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        </div>
+        
+        <div class="ad-placeholder">
+          <!-- Sidebar Ad 2 -->
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID"
+               crossorigin="anonymous"></script>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+               data-ad-slot="YOUR_SIDEBAR_AD_SLOT_2"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+               (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        </div>
+
+        <div class="feature-card">
+          <h3>How to Split PDFs</h3>
+          <ol style="padding-left: 20px; margin-top: 10px;">
+            <li>Upload your PDF file</li>
+            <li>Preview all pages</li>
+            <li>Select pages to extract</li>
+            <li>Download individual pages</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature-card">
+        <h3>100% Free Tool</h3>
+        <p>Split your PDF documents without any costs or watermarks. No registration required.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Secure Processing</h3>
+        <p>Your files are processed in your browser and never uploaded to any server.</p>
+      </div>
+      <div class="feature-card">
+        <h3>All Devices Supported</h3>
+        <p>Works perfectly on computers, tablets, and mobile phones with any modern browser.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2023 PDF Tools Online. All rights reserved.</p>
+      <p style="margin-top: 10px; color: var(--dark-gray);">This tool uses pdf-lib.js to process PDF files directly in your browser.</p>
+    </div>
+  </footer>
+
+  <!-- Include PDF processing library -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://unpkg.com/downloadjs@1.4.7"></script>
+
+  <script>
+    // DOM Elements
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const removeFile = document.getElementById('removeFile');
+    const errorDisplay = document.getElementById('errorDisplay');
+    const loading = document.getElementById('loading');
+    const previewContainer = document.getElementById('previewContainer');
+    const pageThumbnails = document.getElementById('pageThumbnails');
+    const selectAll = document.getElementById('selectAll');
+    const deselectAll = document.getElementById('deselectAll');
+    const splitAll = document.getElementById('splitAll');
+    const splitSelected = document.getElementById('splitSelected');
+    const uploadBtn = uploadArea.querySelector('button');
+
+    // Variables
+    let pdfDoc = null;
+    let selectedPages = new Set();
+
+    // Initialize event listeners
+    function initEventListeners() {
+      // File selection
+      uploadArea.addEventListener('click', () => fileInput.click());
+      uploadBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
+      });
+
+      // Drag and drop
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('highlight');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('highlight');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('highlight');
+        
+        if (e.dataTransfer.files.length) {
+          handleFileSelection(e.dataTransfer.files[0]);
+        }
+      });
+
+      // File input change
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+          handleFileSelection(e.target.files[0]);
+        }
+      });
+
+      // Remove file
+      removeFile.addEventListener('click', resetTool);
+
+      // Page selection
+      selectAll.addEventListener('click', () => {
+        const thumbnails = pageThumbnails.querySelectorAll('.page-thumbnail');
+        thumbnails.forEach((thumb, index) => {
+          thumb.classList.add('selected');
+          selectedPages.add(index + 1);
+        });
+      });
+
+      deselectAll.addEventListener('click', () => {
+        const thumbnails = pageThumbnails.querySelectorAll('.page-thumbnail');
+        thumbnails.forEach(thumb => {
+          thumb.classList.remove('selected');
+        });
+        selectedPages.clear();
+      });
+
+      // Split actions
+      splitAll.addEventListener('click', splitAllPages);
+      splitSelected.addEventListener('click', splitSelectedPages);
+    }
+
+    // Handle file selection
+    async function handleFileSelection(file) {
+      // Validate file
+      if (file.type !== 'application/pdf') {
+        showError('Please select a valid PDF file');
+        return;
+      }
+
+      if (file.size > 50 * 1024 * 1024) { // 50MB limit
+        showError('File size exceeds 50MB limit');
+        return;
+      }
+
+      // Display file info
+      fileName.textContent = file.name;
+      fileSize.textContent = formatFileSize(file.size);
+      fileInfo.style.display = 'flex';
+      uploadArea.style.display = 'none';
+
+      // Show loading state
+      loading.style.display = 'block';
+      hideError();
+
+      try {
+        // Read file as array buffer
+        const arrayBuffer = await file.arrayBuffer();
+        
+        // Load PDF document
+        const { PDFDocument } = PDFLib;
+        pdfDoc = await PDFDocument.load(arrayBuffer);
+        
+        // Generate preview thumbnails
+        await generatePageThumbnails(pdfDoc);
+        
+        // Show preview container
+        previewContainer.style.display = 'block';
+      } catch (error) {
+        console.error('Error processing PDF:', error);
+        showError('Failed to process PDF file. Please try another file.');
+        resetTool();
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    // Generate page thumbnails
+    async function generatePageThumbnails(pdfDoc) {
+      pageThumbnails.innerHTML = '';
+      selectedPages.clear();
+
+      // Create a thumbnail for each page
+      for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+        const pageNum = i + 1;
+        const thumbnail = document.createElement('div');
+        thumbnail.className = 'page-thumbnail';
+        thumbnail.innerHTML = `
+          <div style="width:100%;height:100%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:24px;">${pageNum}</span>
+          </div>
+          <div class="page-number">Page ${pageNum}</div>
+        `;
+
+        // Add click event to select/deselect pages
+        thumbnail.addEventListener('click', () => {
+          thumbnail.classList.toggle('selected');
+          if (thumbnail.classList.contains('selected')) {
+            selectedPages.add(pageNum);
+          } else {
+            selectedPages.delete(pageNum);
+          }
+        });
+
+        pageThumbnails.appendChild(thumbnail);
+      }
+    }
+
+    // Split all pages into individual PDFs
+    async function splitAllPages() {
+      if (!pdfDoc) return;
+
+      loading.style.display = 'block';
+      hideError();
+
+      try {
+        const { PDFDocument } = PDFLib;
+        
+        for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+          // Create a new PDF with just this page
+          const newPdf = await PDFDocument.create();
+          const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
+          newPdf.addPage(copiedPage);
+          
+          // Save as PDF
+          const pdfBytes = await newPdf.save();
+          
+          // Download with page number in filename
+          const originalName = fileName.textContent.replace('.pdf', '');
+          download(pdfBytes, `${originalName}_page_${i+1}.pdf`, "application/pdf");
+          
+          // Small delay between downloads to avoid browser blocking
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
+      } catch (error) {
+        console.error('Error splitting PDF:', error);
+        showError('Failed to split PDF. Please try again.');
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    // Split selected pages into individual PDFs
+    async function splitSelectedPages() {
+      if (!pdfDoc || selectedPages.size === 0) {
+        showError('Please select at least one page to extract');
+        return;
+      }
+
+      loading.style.display = 'block';
+      hideError();
+
+      try {
+        const { PDFDocument } = PDFLib;
+        const pages = Array.from(selectedPages).sort((a, b) => a - b);
+        const originalName = fileName.textContent.replace('.pdf', '');
+
+        // Create individual PDFs for each selected page
+        for (const pageNum of pages) {
+          const newPdf = await PDFDocument.create();
+          const [copiedPage] = await newPdf.copyPages(pdfDoc, [pageNum - 1]);
+          newPdf.addPage(copiedPage);
+          
+          const pdfBytes = await newPdf.save();
+          download(pdfBytes, `${originalName}_page_${pageNum}.pdf`, "application/pdf");
+          
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
+      } catch (error) {
+        console.error('Error splitting selected pages:', error);
+        showError('Failed to extract selected pages. Please try again.');
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    // Reset tool to initial state
+    function resetTool() {
+      fileInput.value = '';
+      fileInfo.style.display = 'none';
+      uploadArea.style.display = '';
+      previewContainer.style.display = 'none';
+      loading.style.display = 'none';
+      hideError();
+      pdfDoc = null;
+      selectedPages.clear();
+    }
+
+    // Show error message
+    function showError(message) {
+      errorDisplay.textContent = message;
+      errorDisplay.style.display = 'block';
+    }
+
+    // Hide error message
+    function hideError() {
+      errorDisplay.style.display = 'none';
+    }
+
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    // Initialize the tool
+    document.addEventListener('DOMContentLoaded', () => {
+      initEventListeners();
+      
+      // Initialize AdSense
+      if (typeof adsbygoogle !== 'undefined') {
+        adsbygoogle.push({});
+      }
+    });
+  </script>
+</body>
+</html>
